@@ -1,6 +1,8 @@
-import { RouteConfig } from "@asteasolutions/zod-to-openapi";
+import { ResponseConfig, RouteConfig, ZodRequestBody } from "@asteasolutions/zod-to-openapi";
 import { app, HttpHandler, HttpMethod } from "@azure/functions";
 import { registry } from "./registry";
+import { RouteParameter } from "@asteasolutions/zod-to-openapi/dist/openapi-registry";
+import { ZodType } from "zod";
 
 /**
  * Registers an Azure Function with the given name and options into the Azure Functions application and the OpenAPI registry.
@@ -15,33 +17,51 @@ export function registerFunction(
     name: string,
     options: {
         handler: HttpHandler,
+        methods: HttpMethod[];
         authLevel: 'anonymous' | 'function' | 'admin',
         routePrefix: string,
-        route: RouteConfig
+        route: string,
+        request?: {
+            body?: ZodRequestBody;
+            params?: RouteParameter;
+            query?: RouteParameter;
+            cookies?: RouteParameter;
+            headers?: RouteParameter | ZodType<unknown>[];
+        };
+        responses: {
+            [statusCode: string]: ResponseConfig;
+        };
     }) {
 
     app.http(name, {
-        methods: [mapHttpMethod(options.route.method)],
+        methods: options.methods,
         authLevel: options.authLevel,
         handler: options.handler,
-        route: options.route.path
+        route: options.route
     });
 
-    // Add the route to the OpenAPI registry, with the route prefix if it exists
-    options.route.path = (options.routePrefix) ? `/${options.routePrefix}/${options.route.path}` : options.route.path;
-
-    registry.registerPath(options.route);
+    options.methods.forEach(method => {
+        const routeConfig: RouteConfig = {
+            method: mapHttpMethod(method),
+            // Add the route to the OpenAPI registry, with the route prefix if it exists
+            path: (options.routePrefix) ? `/${options.routePrefix}/${options.route}` : options.route,
+            request: options.request,
+            responses: options.responses
+        };
+        registry.registerPath(routeConfig);
+    });
 }
 
-function mapHttpMethod(method: 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options' | 'trace'): HttpMethod {
+function mapHttpMethod(method: HttpMethod): 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options' | 'trace' {
     switch (method) {
-        case 'get': return 'GET';
-        case 'post': return 'POST';
-        case 'put': return 'PUT';
-        case 'delete': return 'DELETE';
-        case 'patch': return 'PATCH';
-        case 'head': return 'HEAD';
-        case 'options': return 'OPTIONS';
-        case 'trace': return 'TRACE';
+        case 'GET': return 'get';
+        case 'POST': return 'post';
+        case 'PUT': return 'put';
+        case 'DELETE': return 'delete';
+        case 'PATCH': return 'patch';
+        case 'HEAD': return 'head';
+        case 'OPTIONS': return 'options';
+        case 'TRACE': return 'trace';
+        default: return 'get'
     }
 }

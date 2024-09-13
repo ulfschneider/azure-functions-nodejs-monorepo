@@ -29,37 +29,35 @@ export async function HttpSimpleDemo(request: HttpRequest, context: InvocationCo
 registerFunction(
     'HttpSimpleDemo', {
     handler: HttpSimpleDemo,
+    methods: ['POST'],
     authLevel: 'anonymous',
     routePrefix: 'api',
-    route: {
-        method: 'post',
-        path: 'hello',
-        request: {
-            body: {
-                content: {
-                    'application/json': {
-                        schema: SimpleDemoRequestZodSchema,
-                    },
+    route: 'hello',
+    request: {
+        body: {
+            content: {
+                'application/json': {
+                    schema: SimpleDemoRequestZodSchema,
                 },
-                description: 'Object contains the request parameters.',
-                required: true
+            },
+            description: 'Object contains the request parameters.',
+            required: true
+        }
+    },
+    responses: {
+        200: {
+            description: 'Success',
+            content: {
+                'application/json': {
+                    schema: SimpleDemoResponseZodSchema,
+                }
             }
         },
-        responses: {
-            200: {
-                description: 'Success',
-                content: {
-                    'application/json': {
-                        schema: SimpleDemoResponseZodSchema,
-                    }
-                }
-            },
-            400: {
-                description: 'Bad Request',
-                content: {
-                    'application/json': {
-                        schema: SimpleDemoResponseZodSchema
-                    }
+        400: {
+            description: 'Bad Request',
+            content: {
+                'application/json': {
+                    schema: SimpleDemoResponseZodSchema
                 }
             }
         }
