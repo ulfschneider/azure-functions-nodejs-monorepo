@@ -1,5 +1,6 @@
-import { registerFunction, registerTypeSchema, z } from "@apvee/azure-fx-openapi";
+import { registerFunction, registerTypeSchema, z } from "@apvee/azure-functions-openapi";
 import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
+import { apiKeySecurity } from "..";
 
 const SimpleDemoRequestZodSchema = z.object({
     id: z.string().describe("The Id of the Object"),
@@ -27,11 +28,13 @@ export async function HttpSimpleDemo(request: HttpRequest, context: InvocationCo
 };
 
 registerFunction(
-    'HttpSimpleDemo', {
+    'HttpSimpleDemo',
+    "Simple HTTP Demo Function", {
     handler: HttpSimpleDemo,
     methods: ['POST'],
     authLevel: 'anonymous',
-    routePrefix: 'api',
+    security: [apiKeySecurity],
+    azureFuntionRoutePrefix: 'api',
     route: 'hello',
     request: {
         body: {

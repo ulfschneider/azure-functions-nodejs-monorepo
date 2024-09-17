@@ -1,0 +1,18 @@
+{
+  "applicationName": "application",
+  "apiDependencies": {
+    "ApiClient": {
+      "apiDescriptionUrl": "http://localhost:7071/api/openapi.json",
+      "apiDeploymentBaseUrl": "http://localhost:7071/",
+      "requests": [
+        {
+          "method": "POST",
+          "uriTemplate": "api/hello"
+        }
+      ],
+      "extensions": {
+        "x-ms-kiota-hash": "B2F5C0354399E05F304977ACD2D59D14C021479099AD22CB64B2C2D868C3B520"
+      }
+    }
+  }
+}

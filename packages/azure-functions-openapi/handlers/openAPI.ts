@@ -9,27 +9,25 @@ import { OpenAPI3ExternalDocumentationObject, OpenAPI3InfoObject, OpenAPI3Securi
  * @param security - The OpenAPI3 security requirement objects.
  * @param externalDocs - The OpenAPI3 external documentation object.
  * @param tags - The OpenAPI3 tag objects.
- * @param methods - The HTTP methods to be handled. Default is ['GET'].
  * @param authLevel - The authentication level. Default is 'anonymous'.
- * @param routePrefix - The route prefix. Default is 'api'.
  */
-export function registerOpenAPI3Handler(
+export function registerOpenAPI3Handler(params: {
     informations: OpenAPI3InfoObject,
     security: OpenAPI3SecurityRequirementObject[],
     externalDocs?: OpenAPI3ExternalDocumentationObject,
     tags?: OpenAPI3TagObject[],
-    methods: HttpMethod[] = ['GET'],
-    authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous') {
+    authLevel: 'anonymous' | 'function' | 'admin'
+}) {
 
     const fxHandler = async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
         context.log(`Invoking OpenAPI handler for url "${request.url}"`);
 
         const openApiDefinition = buildOpenAPI3Definition(
-            informations,
-            security,
+            params.informations,
+            params.security,
             [{ url: `${new URL(request.url).origin}` }],
-            externalDocs,
-            tags
+            params.externalDocs,
+            params.tags
         );
 
         if (openApiDefinition) {
@@ -48,8 +46,8 @@ export function registerOpenAPI3Handler(
     };
 
     app.http('HandlerOpenAPIHandler', {
-        methods: methods,
-        authLevel: authLevel,
+        methods: ['GET'],
+        authLevel: params.authLevel,
         handler: fxHandler,
         route: `openapi.json`
     });

@@ -3,11 +3,10 @@ import { app, HttpMethod, HttpRequest, HttpResponseInit, InvocationContext } fro
 /**
  * Registers a SwaggerUI handler for Azure Functions.
  * 
- * @param methods - The HTTP methods to allow for the handler. Default is ['GET'].
  * @param authLevel - The authentication level required for the handler. Default is 'anonymous'.
- * @param routePrefix - The route prefix for the handler. Default is 'api'.
+ * @param azureFuntionRoutePrefix - The Azure Function route prefix for the handler. Default is 'api'.
  */
-export function registerSwaggerUIHandler(methods: HttpMethod[] = ['GET'], authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous', routePrefix: string | null = 'api') {
+export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous', azureFuntionRoutePrefix: string | null = 'api') {
     const fxHandler = async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
         context.log(`Invoking SwaggerUI handler for url "${request.url}"`);
 
@@ -28,7 +27,7 @@ export function registerSwaggerUIHandler(methods: HttpMethod[] = ['GET'], authLe
         <script>
             window.onload = () => {
                 window.ui = SwaggerUIBundle({
-                    url: '/${routePrefix}/openapi.json',
+                    url: '/${azureFuntionRoutePrefix}/openapi.json',
                     dom_id: '#swagger-ui',
                     presets: [ SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset ],
                     layout: "StandaloneLayout"
@@ -50,7 +49,7 @@ export function registerSwaggerUIHandler(methods: HttpMethod[] = ['GET'], authLe
     };
 
     app.http('HandlerSwaggerUI', {
-        methods: methods,
+        methods: ['GET'],
         authLevel: authLevel,
         handler: fxHandler,
         route: `swagger-ui.html`
