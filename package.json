@@ -1,11 +1,8 @@
 {
-  "name": "azure-functions-openapi-monorepo",
+  "name": "azure-functions-nodejs-monorepo",
   "version": "1.0.0",
   "private": true,
   "workspaces": [
     "packages/*"
-  ],
-  "dependencies": {
-    "@hey-api/client-fetch": "^0.3.0"
-  }
+  ]
 }

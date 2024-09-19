@@ -16,7 +16,7 @@
   "keywords": [],
   "author": "Fabio Franzini (Apvee Solutions)",
   "license": "MIT",
-  "description": "An extension for Azure Functions that provides support for exporting OpenAPI spec files from annotated Azure Functions.",
+  "description": "An extension for Azure Functions V4 that provides support for exporting OpenAPI spec files from annotated Azure Functions.",
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.1.1"
   },
