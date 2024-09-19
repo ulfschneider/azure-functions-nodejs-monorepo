@@ -1,3 +1,3 @@
-# azure-functions-openapi-monorepo
+# azure-functions-nodejs-monorepo
 
-An extension for Azure Functions that provides support for exporting OpenAPI spec files from annotated Azure Functions.
+Monorepo for NodeJs Azure Functions V4 that provides extensions and tools support for example to exporting OpenAPI spec files from annotated Azure Functions.
