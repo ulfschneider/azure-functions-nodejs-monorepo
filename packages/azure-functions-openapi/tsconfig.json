@@ -7,5 +7,6 @@
     "strict": true, /* Enable all strict type-checking options. */
     "skipLibCheck": true, /* Skip type checking all .d.ts files. */
     "outDir": "./dist", /* Redirect output structure to the directory. */
+    "declaration": true, /* Generate corresponding .d.ts file. */
   }
 }
