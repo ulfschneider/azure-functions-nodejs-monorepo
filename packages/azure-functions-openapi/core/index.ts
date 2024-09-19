@@ -1,4 +1,3 @@
-export * from './buildOpenAPIDefinition';
 export * from './exports';
 export * from './registerFunction';
 export * from './registerTypeSchema';

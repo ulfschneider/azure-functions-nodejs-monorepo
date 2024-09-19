@@ -1,9 +1,8 @@
-import { ResponseConfig, RouteConfig, ZodRequestBody, } from "@asteasolutions/zod-to-openapi";
+import { ResponseConfig, RouteConfig } from "@asteasolutions/zod-to-openapi";
 import { app, HttpHandler, HttpMethod } from "@azure/functions";
-import { registry } from "./registry";
-import { RouteParameter } from "@asteasolutions/zod-to-openapi/dist/openapi-registry";
 import { ZodType } from "zod";
-import { OpenAPI3SecurityRequirementObject } from "./exports";
+import { OpenAPI3SecurityRequirementObject, RouteParameter, ZodRequestBody } from "./exports";
+import { registry } from "./registry";
 
 /**
  * Registers an Azure Function with the specified configuration.

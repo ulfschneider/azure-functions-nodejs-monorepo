@@ -1,6 +1,7 @@
-import { registerFunction, registerTypeSchema, z } from "@apvee/azure-functions-openapi";
+import { registerFunction, registerTypeSchema } from "@apvee/azure-functions-openapi";
 import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { apiKeySecurity } from "..";
+import { z } from "zod";
 
 const SimpleDemoRequestZodSchema = z.object({
     id: z.string().describe("The Id of the Object"),
@@ -22,7 +23,7 @@ export async function HttpSimpleDemo(request: HttpRequest, context: InvocationCo
     const body = SimpleDemoRequestZodSchema.safeParse(await request.json());
 
     if (body.success)
-        return { status: 200, body: JSON.stringify({ success: true, message: JSON.stringify(body.data) } as SimpleDemoResponse) };
+        return { status: 200, body: JSON.stringify({ success: true, message: "Hello, " + body.data.title } as SimpleDemoResponse) };
     else
         return { status: 400, body: JSON.stringify({ success: true, message: JSON.stringify(body.error) } as SimpleDemoResponse) };
 };
