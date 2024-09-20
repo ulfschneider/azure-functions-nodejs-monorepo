@@ -3,6 +3,7 @@ import { OpenAPIObjectConfig } from "@asteasolutions/zod-to-openapi/dist/v3.0/op
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { OpenAPI3ExternalDocumentationObject, OpenAPI3InfoObject, OpenAPI3OpenAPIObject, OpenAPI3SecurityRequirementObject, OpenAPI3ServerObject, OpenAPI3TagObject } from "../core/exports";
 import { registry } from "./../core/registry";
+import { stringify as yamlStringify } from 'yaml'
 
 /**
  * Registers an OpenAPI3 handler.
@@ -21,7 +22,7 @@ export function registerOpenAPI3Handler(params: {
     authLevel: 'anonymous' | 'function' | 'admin'
 }) {
 
-    const fxHandler = async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
+    const fxJsonHandler = async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
         context.log(`Invoking OpenAPI handler for url "${request.url}"`);
 
         const openApiDefinition = buildOpenAPI3Definition(
@@ -47,11 +48,44 @@ export function registerOpenAPI3Handler(params: {
         }
     };
 
-    app.http('HandlerOpenAPIHandler', {
+    const fxYamlHandler = async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
+        context.log(`Invoking OpenAPI handler for url "${request.url}"`);
+
+        const openApiDefinition = buildOpenAPI3Definition(
+            params.informations,
+            params.security,
+            [{ url: `${new URL(request.url).origin}` }],
+            params.externalDocs,
+            params.tags
+        );
+
+        if (openApiDefinition) {
+            context.log(`OpenAPI definition generated successfully`);
+            return {
+                status: 200,
+                body: yamlStringify(openApiDefinition)
+            };
+        } else {
+            context.error(`Unable to generate the OpenAPI definition`);
+            return {
+                status: 500,
+                body: `Unable to retrive the OpenAPI definition`
+            };
+        }
+    };
+
+    app.http('HandlerJsonOpenAPIHandler', {
         methods: ['GET'],
         authLevel: params.authLevel,
-        handler: fxHandler,
+        handler: fxJsonHandler,
         route: `openapi.json`
+    });
+
+    app.http('HandlerYamlOpenAPIHandler', {
+        methods: ['GET'],
+        authLevel: params.authLevel,
+        handler: fxYamlHandler,
+        route: `openapi.yaml`
     });
 }
 
@@ -72,7 +106,7 @@ function buildOpenAPI3Definition(
     externalDocs?: OpenAPI3ExternalDocumentationObject,
     tags?: OpenAPI3TagObject[]): OpenAPI3OpenAPIObject {
     const config: OpenAPIObjectConfig = {
-        openapi: '3.0.0',
+        openapi: '3.0.3',
         info: informations,
         security: security,
         servers: servers,

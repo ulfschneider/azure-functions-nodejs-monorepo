@@ -31,7 +31,8 @@
   "license": "MIT",
   "description": "An extension for Azure Functions V4 that provides support for exporting OpenAPI spec files from annotated Azure Functions.",
   "dependencies": {
-    "@asteasolutions/zod-to-openapi": "^7.1.1"
+    "@asteasolutions/zod-to-openapi": "^7.1.1",
+    "yaml": "^2.5.1"
   },
   "peerDependencies": {
     "@azure/functions": "^4.0.0",
