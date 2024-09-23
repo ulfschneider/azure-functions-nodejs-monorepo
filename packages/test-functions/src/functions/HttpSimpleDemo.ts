@@ -20,19 +20,15 @@ registerTypeSchema('SimpleDemoResponse', SimpleDemoResponseZodSchema);
 export async function HttpSimpleDemo(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     context.log(`Http function processed request for url "${request.url}"`);
 
-    const body = SimpleDemoRequestZodSchema.safeParse(await request.json());
-
-    if (body.success)
-        return { status: 200, body: JSON.stringify({ success: true, message: "Hello, " + body.data.title } as SimpleDemoResponse) };
-    else
-        return { status: 400, body: JSON.stringify({ success: true, message: JSON.stringify(body.error) } as SimpleDemoResponse) };
+    //const body = SimpleDemoRequestZodSchema.safeParse(await request.json());
+    return { status: 200, body: JSON.stringify({ success: true, message: "Hello" } as SimpleDemoResponse) };
 };
 
 registerFunction(
     'HttpSimpleDemo',
     "Simple HTTP Demo Function", {
     handler: HttpSimpleDemo,
-    methods: ['POST'],
+    methods: ['GET', 'POST'],
     authLevel: 'anonymous',
     security: [apiKeySecurity],
     azureFuntionRoutePrefix: 'api',

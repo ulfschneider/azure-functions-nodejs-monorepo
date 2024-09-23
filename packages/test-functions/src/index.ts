@@ -6,12 +6,16 @@ app.setup({
 });
 
 export const apiKeySecurity = registerApiKeySecuritySchema("code", "query");
-
-registerOpenAPI3Handler({
+const openAPIDefinition = {
     informations: { title: 'My API', version: "1", contact: { name: "Apvee Solutions", email: "hello@apvee.com", url: "https://www.apvee.com" } },
     security: [apiKeySecurity],
     externalDocs: { description: "External Documentation", url: "https://www.apvee.com" },
     tags: [{ name: "My Tag", description: "My Tag Description" }],
-    authLevel: "anonymous"
-});
-registerSwaggerUIHandler("anonymous", 'api');
+}
+
+const documents = [
+    registerOpenAPI3Handler(openAPIDefinition, "anonymous", "json"),
+    registerOpenAPI3Handler(openAPIDefinition, "anonymous", "yaml")
+];
+
+registerSwaggerUIHandler("anonymous", 'api', documents);
