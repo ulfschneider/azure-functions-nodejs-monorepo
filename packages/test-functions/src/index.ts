@@ -1,4 +1,4 @@
-import { registerApiKeySecuritySchema, registerOpenAPI3Handler, registerSwaggerUIHandler } from '@apvee/azure-functions-openapi';
+import { registerApiKeySecuritySchema, registerOpenAPI2Handler, registerOpenAPI3Handler, registerSwaggerUIHandler } from '@apvee/azure-functions-openapi';
 import { app } from '@azure/functions';
 
 app.setup({
@@ -15,7 +15,9 @@ const openAPIDefinition = {
 
 const documents = [
     registerOpenAPI3Handler(openAPIDefinition, "anonymous", "json"),
-    registerOpenAPI3Handler(openAPIDefinition, "anonymous", "yaml")
+    registerOpenAPI3Handler(openAPIDefinition, "anonymous", "yaml"),
+    registerOpenAPI2Handler(openAPIDefinition, "anonymous", "json"),
+    registerOpenAPI2Handler(openAPIDefinition, "anonymous", "yaml")
 ];
 
 registerSwaggerUIHandler("anonymous", 'api', documents);

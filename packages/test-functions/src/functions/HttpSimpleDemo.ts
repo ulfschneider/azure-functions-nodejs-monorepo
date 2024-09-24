@@ -32,8 +32,9 @@ registerFunction(
     authLevel: 'anonymous',
     security: [apiKeySecurity],
     azureFuntionRoutePrefix: 'api',
-    route: 'hello',
+    route: 'hello/{id}',
     request: {
+        params: z.object({ id: z.string().describe("id of the request") }).describe("Object contains the request parameters."),
         body: {
             content: {
                 'application/json': {
