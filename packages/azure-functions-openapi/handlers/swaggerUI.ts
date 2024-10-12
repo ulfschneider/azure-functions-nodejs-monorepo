@@ -1,38 +1,52 @@
-import { app, HttpMethod, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
+import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
+import { OpenAPIDocumentInfo } from "../core/types";
 
 /**
- * Registers a SwaggerUI handler for Azure Functions.
+ * Registers a Swagger UI handler for an Azure Function.
+ *
+ * @param {'anonymous' | 'function' | 'admin'} authLevel - The authorization level required to access the Swagger UI.
+ * @param {string} azureFuntionRoutePrefix - The route prefix for the Azure Function. Defaults to 'api'.
+ * @param {OpenAPIDocumentInfo[]} openAPIDocuments - An array of OpenAPI document information objects to be included in the Swagger UI.
  * 
- * @param authLevel - The authentication level required for the handler. Default is 'anonymous'.
- * @param azureFuntionRoutePrefix - The Azure Function route prefix for the handler. Default is 'api'.
+ * This function sets up an HTTP GET handler that serves a Swagger UI page, which lists the provided OpenAPI documents.
+ * The Swagger UI is configured to use the provided URLs and titles for the OpenAPI documents.
  */
-export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous', azureFuntionRoutePrefix: string | null = 'api') {
+export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous', azureFuntionRoutePrefix: string | null = 'api', openAPIDocuments: OpenAPIDocumentInfo[]): void {
     const fxHandler = async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
         context.log(`Invoking SwaggerUI handler for url "${request.url}"`);
 
+        const urls = openAPIDocuments.map(doc => {
+            return {
+                url: `/${azureFuntionRoutePrefix}/${doc.url}`,
+                name: doc.title
+            };
+        });
+
         const html = `
-        <!DOCTYPE html>
+       <!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <meta name="description" content="SwaggerUI" />
             <title>SwaggerUI</title>
-            <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@latest/swagger-ui.css" />
+            <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
+            <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js" crossorigin></script>
+            <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js" crossorigin></script>
         </head>
         <body>
         <div id="swagger-ui"></div>
-        <script src="https://unpkg.com/swagger-ui-dist@latest/swagger-ui-bundle.js" crossorigin></script>
-        <script src="https://unpkg.com/swagger-ui-dist@latest/swagger-ui-standalone-preset.js" crossorigin></script>
+        <div id="swagger-ui"></div>
         <script>
-            window.onload = () => {
-                window.ui = SwaggerUIBundle({
-                    url: '/${azureFuntionRoutePrefix}/openapi.json',
-                    dom_id: '#swagger-ui',
-                    presets: [ SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset ],
-                    layout: "StandaloneLayout"
-                });
-            };
+            window.swaggerUI = SwaggerUIBundle({
+                urls: ${JSON.stringify(urls)},
+                dom_id: '#swagger-ui',
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                layout: "StandaloneLayout"
+            });
         </script>
         </body>
         </html>`;
@@ -48,7 +62,7 @@ export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | '
         };
     };
 
-    app.http('HandlerSwaggerUI', {
+    app.http('X_HandlerSwaggerUI', {
         methods: ['GET'],
         authLevel: authLevel,
         handler: fxHandler,

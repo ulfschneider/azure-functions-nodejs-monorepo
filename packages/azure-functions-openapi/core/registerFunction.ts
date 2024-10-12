@@ -1,49 +1,104 @@
-import { ResponseConfig, RouteConfig } from "@asteasolutions/zod-to-openapi";
-import { app, HttpHandler, HttpMethod } from "@azure/functions";
-import { ZodType } from "zod";
-import { OpenAPI3SecurityRequirementObject, RouteParameter, ZodRequestBody } from "./exports";
+import { RouteConfig } from "@asteasolutions/zod-to-openapi";
+import { app, HttpMethod } from "@azure/functions";
 import { registry } from "./registry";
+import { FunctionRouteConfig } from "./types";
 
 /**
- * Registers an Azure Function with the specified configuration.
+ * Registers a function with the specified configuration.
  *
- * @param name - The name of the function to register.
- * @param options - The configuration options for the function.
- * @param options.handler - The HTTP handler for the function.
- * @param options.methods - An array of HTTP methods that the function responds to.
- * @param options.authLevel - The authorization level for the function. Can be 'anonymous', 'function', or 'admin'.
- * @param options.azureFuntionRoutePrefix - The route prefix for the Azure Function.
- * @param options.route - The specific route for the function.
- * @param options.request - Optional request configuration.
- * @param options.request.body - Optional schema for the request body.
- * @param options.request.params - Optional schema for route parameters.
- * @param options.request.query - Optional schema for query parameters.
- * @param options.request.cookies - Optional schema for cookies.
- * @param options.request.headers - Optional schema for headers.
- * @param options.responses - A mapping of response status codes to their configurations.
- * @returns void
+ * @param {string} name - The name of the function.
+ * @param {string} summary - A summary of the function.
+ * @param {FunctionRouteConfig} options - Configuration options for the function.
+ * @param {Function} options.handler - The HTTP handler for the function.
+ * @param {HttpMethod[]} options.methods - An array of HTTP methods supported by the function.
+ * @param {'anonymous' | 'function' | 'admin'} options.authLevel - The authorization level required to access the function.
+ * @param {Array} [options.security] - An array of security requirements for the function.
+ * @param {string} options.azureFunctionRoutePrefix - The route prefix for the Azure Function.
+ * @param {string} options.route - The route for the function.
+ * @param {Object} [options.request] - An object defining the request parameters, including body, params, query, cookies, and headers.
+ * @param {Object} options.responses - An object defining the possible responses from the function, keyed by status code.
+ * @param {string} [options.description] - A detailed description of the function.
+ * @param {Array} [options.tags] - An array of tags associated with the function.
+ * @param {string} [options.operationId] - A unique identifier for the operation.
+ * @param {boolean} [options.deprecated] - A boolean indicating whether the function is deprecated.
+ * @param {Object} [options.externalDocs] - External documentation for the function.
+ * @param {Object} [options.callbacks] - Callback objects for the function.
+ * @param {Array} [options.parameters] - Parameters for the function.
+ * @param {Object} [options.requestBody] - Request body configuration for the function.
+ * @param {Array} [options.servers] - Server configurations for the function.
  */
 export function registerFunction(
     name: string,
-    description: string,
-    options: {
-        handler: HttpHandler,
-        methods: HttpMethod[];
-        authLevel: 'anonymous' | 'function' | 'admin',
-        security?: OpenAPI3SecurityRequirementObject[],
-        azureFuntionRoutePrefix: string,
-        route: string,
-        request?: {
-            body?: ZodRequestBody;
-            params?: RouteParameter;
-            query?: RouteParameter;
-            cookies?: RouteParameter;
-            headers?: RouteParameter | ZodType<unknown>[];
-        };
-        responses: {
-            [statusCode: string]: ResponseConfig;
-        };
-    }) {
+    summary: string,
+    options: FunctionRouteConfig) {
+
+    registerPath(name, summary, false, options);
+}
+
+/**
+ * Registers a webhook function with the specified configuration.
+ *
+ * @param name - The name of the webhook.
+ * @param summary - A summary of the webhook.
+ * @param options - Configuration options for the webhook function.
+ * 
+ * @remarks
+ * The `options` parameter should include the following properties:
+ * - `handler`: The HTTP handler for the webhook.
+ * - `methods`: An array of HTTP methods supported by the webhook.
+ * - `authLevel`: The authorization level required to access the webhook ('anonymous', 'function', or 'admin').
+ * - `security` (optional): An array of security requirements for the webhook.
+ * - `azureFunctionRoutePrefix`: The route prefix for the Azure Function.
+ * - `route`: The route for the webhook.
+ * - `request` (optional): An object defining the request parameters, including body, params, query, cookies, and headers.
+ * - `responses`: An object defining the possible responses from the webhook, keyed by status code.
+ * - `description` (optional): A detailed description of the webhook.
+ * - `tags` (optional): An array of tags associated with the webhook.
+ * - `operationId` (optional): A unique identifier for the operation.
+ * - `deprecated` (optional): A boolean indicating whether the webhook is deprecated.
+ * - `externalDocs` (optional): External documentation for the webhook.
+ * - `callbacks` (optional): Callback objects for the webhook.
+ * - `parameters` (optional): Parameters for the webhook.
+ * - `requestBody` (optional): Request body configuration for the webhook.
+ * - `servers` (optional): Server configurations for the webhook.
+ */
+export function registerWebHook(
+    name: string,
+    summary: string,
+    options: FunctionRouteConfig) {
+
+    registerPath(name, summary, true, options);
+}
+
+/**
+ * Registers a webhook function with the specified configuration.
+ *
+ * @param {string} name - The name of the webhook.
+ * @param {string} summary - A summary of the webhook.
+ * @param {FunctionRouteConfig} options - Configuration options for the webhook function.
+ * @param {Function} options.handler - The HTTP handler for the webhook.
+ * @param {HttpMethod[]} options.methods - An array of HTTP methods supported by the webhook.
+ * @param {'anonymous' | 'function' | 'admin'} options.authLevel - The authorization level required to access the webhook.
+ * @param {Array} [options.security] - An array of security requirements for the webhook.
+ * @param {string} options.azureFunctionRoutePrefix - The route prefix for the Azure Function.
+ * @param {string} options.route - The route for the webhook.
+ * @param {Object} [options.request] - An object defining the request parameters, including body, params, query, cookies, and headers.
+ * @param {Object} options.responses - An object defining the possible responses from the webhook, keyed by status code.
+ * @param {string} [options.description] - A detailed description of the webhook.
+ * @param {Array} [options.tags] - An array of tags associated with the webhook.
+ * @param {string} [options.operationId] - A unique identifier for the operation.
+ * @param {boolean} [options.deprecated] - A boolean indicating whether the webhook is deprecated.
+ * @param {Object} [options.externalDocs] - External documentation for the webhook.
+ * @param {Object} [options.callbacks] - Callback objects for the webhook.
+ * @param {Array} [options.parameters] - Parameters for the webhook.
+ * @param {Object} [options.requestBody] - Request body configuration for the webhook.
+ * @param {Array} [options.servers] - Server configurations for the webhook.
+ */
+function registerPath(
+    name: string,
+    summary: string,
+    isWebHook: boolean,
+    options: FunctionRouteConfig) {
 
     app.http(name, {
         methods: options.methods,
@@ -54,18 +109,28 @@ export function registerFunction(
 
     options.methods.forEach(method => {
         const routeConfig: RouteConfig = {
-            summary: description,
-            security: options.security,
+            summary: summary,
             method: mapHttpMethod(method),
             // Add the route to the OpenAPI registry, with the route prefix if it exists
             path: (options.azureFuntionRoutePrefix) ? `/${options.azureFuntionRoutePrefix}/${options.route}` : options.route,
+            security: options.security,
             request: options.request,
-            responses: options.responses
+            responses: options.responses,
+            description: options.description,
+            tags: options.tags,
+            operationId: options.operationId,
+            deprecated: options.deprecated,
+            externalDocs: options.externalDocs,
+            callbacks: options.callbacks,
+            parameters: options.parameters,
+            requestBody: options.requestBody,
+            servers: options.servers
         };
 
-        routeConfig.security
-
-        registry.registerPath(routeConfig);
+        if (isWebHook)
+            registry.registerWebhook(routeConfig);
+        else
+            registry.registerPath(routeConfig);
     });
 }
 
