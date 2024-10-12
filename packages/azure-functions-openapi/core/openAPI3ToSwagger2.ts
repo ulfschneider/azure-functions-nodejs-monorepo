@@ -1,3 +1,10 @@
+/**
+ * This code has been modified from the original version.
+ * Original file: "openapi3_to_swagger2.js"
+ * Repository: https://github.com/LucyBot-Inc/api-spec-converter
+ * License: MIT
+ */
+
 "use strict";
 import camelCase from 'lodash.camelcase';
 import cloneDeep from 'lodash.clonedeep';
@@ -15,7 +22,7 @@ const SUPPORTED_MIME_TYPES = {
 function capitalizeFirstLetter(str: string): string {
     if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1);
-} 
+}
 
 /**
  * Trasforma OpenAPI 3.0 in Swagger 2.0

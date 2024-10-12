@@ -1,107 +1,61 @@
 import { OpenApiGeneratorV3, OpenApiGeneratorV31 } from "@asteasolutions/zod-to-openapi";
-import { OpenAPIObjectConfig } from "@asteasolutions/zod-to-openapi/dist/v3.0/openapi-generator";
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { OpenAPI3ExternalDocumentationObject, OpenAPI3InfoObject, OpenAPI3OpenAPIObject, OpenAPI3SecurityRequirementObject, OpenAPI3ServerObject, OpenAPI3TagObject } from "../core/exports";
-import { stringify as yamlStringify } from 'yaml'
-import { IOpenAPI3Definition, IOpenAPIDocument } from "../core/types";
-import { registry } from "../core";
+import { stringify as yamlStringify } from 'yaml';
 import Converter from "../core/openAPI3ToSwagger2";
+import { registry } from "../core/registry";
+import { OpenAPIDocumentInfo, OpenAPIObject, OpenAPIObjectConfig } from "../core/types";
 
 /**
- * Registers an OpenAPI 3.0 handler for an Azure Function.
+ * Registers an OpenAPI handler for an Azure Function.
  *
- * @param definition - The OpenAPI 3.0 definition object.
- * @param authLevel - The authorization level required to access the endpoint. Can be 'anonymous', 'function', or 'admin'.
- * @param documentFormat - The format of the OpenAPI document. Can be 'json' or 'yaml'.
- * @param documentRoute - Optional custom route for the OpenAPI document. If not provided, defaults to 'openapi-3.json' or 'openapi-3.yaml' based on the documentFormat.
- * @returns An object containing the title and URL of the registered OpenAPI document.
+ * @param {'anonymous' | 'function' | 'admin'} authLevel - The authorization level required to access the function.
+ * @param {OpenAPIObjectConfig} configuration - The OpenAPI configuration object containing information about the API.
+ * @param {'2.0' | '3.0.3' | '3.1.0'} version - The OpenAPI version to use.
+ * @param {'json' | 'yaml'} format - The format of the OpenAPI document.
+ * @param {string} [route] - Optional. The route at which the OpenAPI document will be served. If not provided, a default route will be used based on the format and version.
+ * @returns {OpenAPIDocumentInfo} An object containing the title and URL of the registered OpenAPI document.
  */
-export function registerOpenAPI3Handler(
-    definition: IOpenAPI3Definition,
+export function registerOpenAPIHandler(
     authLevel: 'anonymous' | 'function' | 'admin',
-    documentFormat: 'json' | 'yaml',
-    documentRoute?: string,
-): IOpenAPIDocument {
-    const openapi = '3.0.3';
-    const route = documentRoute || (documentFormat === "json") ? `openapi-${openapi}.json` : `openapi-${openapi}.yaml`;
-    const functionName = `OpenAPI30${documentFormat === 'json' ? 'Json' : 'Yaml'}Handler`;
+    configuration: OpenAPIObjectConfig,
+    version: '2.0' | '3.0.3' | '3.1.0',
+    format: 'json' | 'yaml',
+    route?: string,
+): OpenAPIDocumentInfo {
+    const finalRoute = route || (format === "json") ? `openapi-${version}.json` : `openapi-${version}.yaml`;
+    const functionName = `X_OpenAPI_${version.split('.').join('_')}_${format === 'json' ? 'Json' : 'Yaml'}Handler`;
 
     app.http(functionName, {
         methods: ['GET'],
         authLevel: authLevel,
         handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
-            context.log(`Invoking OpenAPI ${openapi} ${documentFormat} definition handler for url "${request.url}"`);
+            context.log(`Invoking OpenAPI ${version} ${format} definition handler for url "${request.url}"`);
 
-            const openAPIDefinition: OpenAPI3OpenAPIObject = new OpenApiGeneratorV3(registry.definitions)
+            const openApiGenerator = version === '3.1.0' ? OpenApiGeneratorV31 : OpenApiGeneratorV3;
+            let openAPIDefinition: OpenAPIObject = new openApiGenerator(registry.definitions)
                 .generateDocument({
-                    openapi: openapi,
-                    info: definition.informations,
-                    security: definition.security,
-                    servers: definition.servers || [],
-                    externalDocs: definition.externalDocs,
-                    tags: definition.tags,
+                    openapi: version,
+                    info: configuration.info,
+                    security: configuration.security,
+                    servers: configuration.servers || [{ url: `${new URL(request.url).origin}` }],
+                    externalDocs: configuration.externalDocs,
+                    tags: configuration.tags
                 });
+
+            if (version === '2.0') {
+                const converter = new Converter(openAPIDefinition);
+                openAPIDefinition = converter.convert() as OpenAPIObject;
+            }
 
             return {
                 status: 200,
-                headers: { 'Content-Type': documentFormat === 'json' ? 'application/json' : 'application/x-yaml' },
-                body: (documentFormat === 'yaml') ? yamlStringify(openAPIDefinition) : undefined,
-                jsonBody: (documentFormat === 'json') ? openAPIDefinition : undefined,
+                headers: { 'Content-Type': format === 'json' ? 'application/json' : 'application/x-yaml' },
+                body: (format === 'yaml') ? yamlStringify(openAPIDefinition) : undefined,
+                jsonBody: (format === 'json') ? openAPIDefinition : undefined,
             };
         },
-        route: route
+        route: finalRoute
     });
 
-    return { title: `${definition.informations.title} (${documentFormat === 'json' ? 'Json' : 'Yaml'} - OpenAPI ${openapi})`, url: route };
-}
-
-/**
- * Registers an OpenAPI 2.0 handler for an Azure Function.
- *
- * @param definition - The OpenAPI 3.0 definition object.
- * @param authLevel - The authorization level required to access the endpoint. Can be 'anonymous', 'function', or 'admin'.
- * @param documentFormat - The format of the OpenAPI document. Can be 'json' or 'yaml'.
- * @param documentRoute - Optional custom route for the OpenAPI document. If not provided, defaults to 'openapi-3.json' or 'openapi-3.yaml' based on the documentFormat.
- * @returns An object containing the title and URL of the registered OpenAPI document.
- */
-export function registerOpenAPI2Handler(
-    definition: IOpenAPI3Definition,
-    authLevel: 'anonymous' | 'function' | 'admin',
-    documentFormat: 'json' | 'yaml',
-    documentRoute?: string,
-): IOpenAPIDocument {
-    const openapi = '2.0';
-    const route = documentRoute || (documentFormat === "json") ? `openapi-${openapi}.json` : `openapi-${openapi}.yaml`;
-    const functionName = `OpenAPI2${documentFormat === 'json' ? 'Json' : 'Yaml'}Handler`;
-
-    app.http(functionName, {
-        methods: ['GET'],
-        authLevel: authLevel,
-        handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
-            context.log(`Invoking OpenAPI ${openapi} ${documentFormat} definition handler for url "${request.url}"`);
-
-            const openAPIDefinition: OpenAPI3OpenAPIObject = new OpenApiGeneratorV3(registry.definitions)
-                .generateDocument({
-                    openapi: '3.0.3',
-                    info: definition.informations,
-                    security: definition.security,
-                    servers: definition.servers || [{ url: `${new URL(request.url).origin}` }],
-                    externalDocs: definition.externalDocs,
-                    tags: definition.tags,
-                });
-
-            const converter = new Converter(openAPIDefinition);
-            const swaggerSpec = converter.convert();
-
-            return {
-                status: 200,
-                headers: { 'Content-Type': documentFormat === 'json' ? 'application/json' : 'application/x-yaml' },
-                body: (documentFormat === 'yaml') ? yamlStringify(swaggerSpec) : undefined,
-                jsonBody: (documentFormat === 'json') ? swaggerSpec : undefined,
-            };
-        },
-        route: route
-    });
-
-    return { title: `${definition.informations.title} (${documentFormat === 'json' ? 'Json' : 'Yaml'} - OpenAPI ${openapi})`, url: route };
+    return { title: `${configuration.info.title} (${format === 'json' ? 'Json' : 'Yaml'} - OpenAPI ${version})`, url: finalRoute };
 }

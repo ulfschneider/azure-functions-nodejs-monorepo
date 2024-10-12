@@ -1,13 +1,17 @@
-import { app, HttpMethod, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { IOpenAPIDocument } from "../core/types";
+import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
+import { OpenAPIDocumentInfo } from "../core/types";
 
 /**
- * Registers a SwaggerUI handler for Azure Functions.
+ * Registers a Swagger UI handler for an Azure Function.
+ *
+ * @param {'anonymous' | 'function' | 'admin'} authLevel - The authorization level required to access the Swagger UI.
+ * @param {string} azureFuntionRoutePrefix - The route prefix for the Azure Function. Defaults to 'api'.
+ * @param {OpenAPIDocumentInfo[]} openAPIDocuments - An array of OpenAPI document information objects to be included in the Swagger UI.
  * 
- * @param authLevel - The authentication level required for the handler. Default is 'anonymous'.
- * @param azureFuntionRoutePrefix - The Azure Function route prefix for the handler. Default is 'api'.
+ * This function sets up an HTTP GET handler that serves a Swagger UI page, which lists the provided OpenAPI documents.
+ * The Swagger UI is configured to use the provided URLs and titles for the OpenAPI documents.
  */
-export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous', azureFuntionRoutePrefix: string | null = 'api', openAPIDocuments: IOpenAPIDocument[]): void {
+export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous', azureFuntionRoutePrefix: string | null = 'api', openAPIDocuments: OpenAPIDocumentInfo[]): void {
     const fxHandler = async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
         context.log(`Invoking SwaggerUI handler for url "${request.url}"`);
 
@@ -58,7 +62,7 @@ export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | '
         };
     };
 
-    app.http('HandlerSwaggerUI', {
+    app.http('X_HandlerSwaggerUI', {
         methods: ['GET'],
         authLevel: authLevel,
         handler: fxHandler,
