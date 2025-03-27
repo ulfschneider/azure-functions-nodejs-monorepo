@@ -5,19 +5,19 @@ import { OpenAPIDocumentInfo } from "../core/types";
  * Registers a Swagger UI handler for an Azure Function.
  *
  * @param {'anonymous' | 'function' | 'admin'} authLevel - The authorization level required to access the Swagger UI.
- * @param {string} azureFuntionRoutePrefix - The route prefix for the Azure Function. Defaults to 'api'.
+ * @param {string} azureFunctionRoutePrefix - The route prefix for the Azure Function. Defaults to 'api'.
  * @param {OpenAPIDocumentInfo[]} openAPIDocuments - An array of OpenAPI document information objects to be included in the Swagger UI.
  * 
  * This function sets up an HTTP GET handler that serves a Swagger UI page, which lists the provided OpenAPI documents.
  * The Swagger UI is configured to use the provided URLs and titles for the OpenAPI documents.
  */
-export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous', azureFuntionRoutePrefix: string | null = 'api', openAPIDocuments: OpenAPIDocumentInfo[]): void {
+export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous', azureFunctionRoutePrefix: string | null = 'api', openAPIDocuments: OpenAPIDocumentInfo[]): void {
     const fxHandler = async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
         context.log(`Invoking SwaggerUI handler for url "${request.url}"`);
 
         const urls = openAPIDocuments.map(doc => {
             return {
-                url: `/${azureFuntionRoutePrefix}/${doc.url}`,
+                url: `/${azureFunctionRoutePrefix}/${doc.url}`,
                 name: doc.title
             };
         });

@@ -50,14 +50,14 @@ export type OpenAPIObjectConfig = Omit<OpenAPIObject, 'paths' | 'components' | '
  * @property {HttpHandler} handler - The handler function for the route.
  * @property {HttpMethod[]} methods - An array of HTTP methods supported by the route.
  * @property {'anonymous' | 'function' | 'admin'} authLevel - The authorization level required for the route.
- * @property {string} azureFuntionRoutePrefix - The prefix for the Azure Function route.
+ * @property {string} azureFunctionRoutePrefix - The prefix for the Azure Function route.
  * @property {string} route - The route path.
  */
 export type FunctionRouteConfig = Omit<RouteConfig, 'method' | 'path' | 'summary'> & {
     handler: HttpHandler,
     methods: HttpMethod[];
     authLevel: 'anonymous' | 'function' | 'admin',
-    azureFuntionRoutePrefix: string,
+    azureFunctionRoutePrefix: string,
     route: string
 };
 

@@ -112,7 +112,7 @@ function registerPath(
             summary: summary,
             method: mapHttpMethod(method),
             // Add the route to the OpenAPI registry, with the route prefix if it exists
-            path: (options.azureFuntionRoutePrefix) ? `/${options.azureFuntionRoutePrefix}/${options.route}` : options.route,
+            path: (options.azureFunctionRoutePrefix) ? `/${options.azureFunctionRoutePrefix}/${options.route}` : options.route,
             security: options.security,
             request: options.request,
             responses: options.responses,

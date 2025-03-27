@@ -37,7 +37,7 @@ registerFunction(
         methods: ['POST'],
         authLevel: 'anonymous',
         security: [apiKeySecurity],
-        azureFuntionRoutePrefix: 'api',
+        azureFunctionRoutePrefix: 'api',
         route: 'todos',
         request: {
             body: {
