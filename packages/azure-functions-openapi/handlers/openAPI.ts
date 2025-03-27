@@ -22,7 +22,7 @@ export function registerOpenAPIHandler(
     format: 'json' | 'yaml',
     route?: string,
 ): OpenAPIDocumentInfo {
-    const finalRoute = route || (format === "json") ? `openapi-${version}.json` : `openapi-${version}.yaml`;
+    const finalRoute = route || ((format === "json") ? `openapi-${version}.json` : `openapi-${version}.yaml`);
     const functionName = `X_OpenAPI_${version.split('.').join('_')}_${format === 'json' ? 'Json' : 'Yaml'}Handler`;
 
     app.http(functionName, {
