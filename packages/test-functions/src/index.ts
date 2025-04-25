@@ -3,7 +3,7 @@ import {
   registerApiKeySecuritySchema,
   registerOpenAPIHandler,
   registerSwaggerUIHandler,
-} from "@ulfschneider/azure-functions-openapi";
+} from "azure-functions-openapi";
 import { app } from "@azure/functions";
 
 app.setup({
