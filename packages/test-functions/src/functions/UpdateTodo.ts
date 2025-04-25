@@ -1,4 +1,4 @@
-import { convertHttpRequestParamsToObject, registerFunction } from "@apvee/azure-functions-openapi";
+import { convertHttpRequestParamsToObject, registerFunction } from "@ulfschneider/azure-functions-openapi";
 import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { apiKeySecurity } from "..";
 import { ErrorResponse, ErrorResponseSchema } from "../models/errors";
@@ -7,11 +7,11 @@ import { TodoService } from "../services/TodoService";
 
 /**
  * Handles the HTTP request to update a ToDo item.
- * 
+ *
  * @param request - The HTTP request object containing the request details.
  * @param context - The invocation context providing information about the function execution.
  * @returns A promise that resolves to an HTTP response with the updated ToDo item or an error message.
- * 
+ *
  * The function performs the following steps:
  * 1. Logs the request URL and method.
  * 2. Extracts and validates the request parameters using `ToDoParamIDSchema`.

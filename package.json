@@ -1,5 +1,5 @@
 {
-  "name": "azure-functions-nodejs-monorepo",
+  "name": "@ulfschneider/azure-functions-nodejs-monorepo",
   "version": "1.0.0",
   "private": true,
   "workspaces": [

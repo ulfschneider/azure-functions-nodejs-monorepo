@@ -1,5 +1,10 @@
-import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { OpenAPIDocumentInfo , SwaggerUIConfig} from "../core/types";
+import {
+  app,
+  HttpRequest,
+  HttpResponseInit,
+  InvocationContext,
+} from "@azure/functions";
+import { OpenAPIDocumentInfo, SwaggerUIConfig } from "../core/types";
 
 /**
  * Registers a Swagger UI handler for an Azure Function.
@@ -12,27 +17,36 @@ import { OpenAPIDocumentInfo , SwaggerUIConfig} from "../core/types";
  * This function sets up an HTTP GET handler that serves a Swagger UI page, which lists the provided OpenAPI documents.
  * The Swagger UI is configured to use the provided URLs and titles for the OpenAPI documents.
  */
-export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous', azureFunctionRoutePrefix: string | null = 'api', openAPIDocuments: OpenAPIDocumentInfo[], swaggerUIConfig?: SwaggerUIConfig): void {
+export function registerSwaggerUIHandler(
+  authLevel: "anonymous" | "function" | "admin" = "anonymous",
+  azureFunctionRoutePrefix: string | null = "api",
+  openAPIDocuments: OpenAPIDocumentInfo[],
+  swaggerUIConfig?: SwaggerUIConfig
+): void {
+  const defaultSwaggerUIConfig: SwaggerUIConfig = {
+    location: "https://unpkg.com/swagger-ui-dist/",
+    route: "swagger-ui.html",
+  };
+  const swaggerConfig = Object.assign(defaultSwaggerUIConfig, swaggerUIConfig);
 
-  const defaultSwaggerConfig: SwaggerUIConfig = { location: 'https://unpkg.com/swagger-ui-dist/', route: 'swagger-ui.html' }
-  swaggerUIConfig = Object.assign(defaultSwaggerConfig, swaggerUIConfig)
+  const fxHandler = async (
+    request: HttpRequest,
+    context: InvocationContext
+  ): Promise<HttpResponseInit> => {
+    context.log(`Invoking SwaggerUI handler for url "${request.url}"`);
 
-    const fxHandler = async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
-        context.log(`Invoking SwaggerUI handler for url "${request.url}"`);
+    if (swaggerConfig.location && !swaggerConfig.location.endsWith("/")) {
+      swaggerConfig.location += "/";
+    }
 
+    const urls = openAPIDocuments.map((doc) => {
+      return {
+        url: `/${azureFunctionRoutePrefix}/${doc.url}`,
+        name: doc.title,
+      };
+    });
 
-        if (swaggerUIConfig.location && !swaggerUIConfig.location.endsWith('/')) {
-          swaggerUIConfig.location += '/'
-        }
-
-        const urls = openAPIDocuments.map(doc => {
-            return {
-                url: `/${azureFunctionRoutePrefix}/${doc.url}`,
-                name: doc.title
-            };
-        });
-
-        const html = `
+    const html = `
        <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -40,9 +54,15 @@ export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | '
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <meta name="description" content="SwaggerUI" />
             <title>SwaggerUI</title>
-            <link rel="stylesheet" type="text/css" href="${swaggerUIConfig.location}swagger-ui.css" />
-            <script src="${swaggerUIConfig.location}swagger-ui-bundle.js" crossorigin></script>
-            <script src="${swaggerUIConfig.location}swagger-ui-standalone-preset.js" crossorigin></script>
+            <link rel="stylesheet" type="text/css" href="${
+              swaggerConfig.location
+            }swagger-ui.css" />
+            <script src="${
+              swaggerConfig.location
+            }swagger-ui-bundle.js" crossorigin></script>
+            <script src="${
+              swaggerConfig.location
+            }swagger-ui-standalone-preset.js" crossorigin></script>
         </head>
         <body>
         <div id="swagger-ui"></div>
@@ -61,21 +81,21 @@ export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | '
         </body>
         </html>`;
 
-        context.log(`SwaggerUI generated successfully`);
+    context.log(`SwaggerUI generated successfully`);
 
-        return {
-            status: 200,
-            body: html,
-            headers: {
-                "Content-Type": "text/html"
-            }
-        };
+    return {
+      status: 200,
+      body: html,
+      headers: {
+        "Content-Type": "text/html",
+      },
     };
+  };
 
-    app.http('X_HandlerSwaggerUI', {
-        methods: ['GET'],
-        authLevel: authLevel,
-        handler: fxHandler,
-        route: swaggerUIConfig.route
-    });
+  app.http("X_HandlerSwaggerUI", {
+    methods: ["GET"],
+    authLevel: authLevel,
+    handler: fxHandler,
+    route: swaggerConfig.route,
+  });
 }

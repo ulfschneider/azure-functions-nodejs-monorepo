@@ -1,4 +1,4 @@
-import { registerTypeSchema } from "@apvee/azure-functions-openapi";
+import { registerTypeSchema } from "@ulfschneider/azure-functions-openapi";
 import { z } from "zod";
 
 export const FilterParamsSchema = z.object({

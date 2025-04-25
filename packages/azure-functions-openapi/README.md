@@ -1,7 +1,10 @@
-# @apvee/azure-functions-openapi
+# @ulfschneider/azure-functions-openapi
+
+This is a fork of @apvee/azure-functions-openapi. The fork adds the functionality to configure the location where the Swagger UI library files will be downloaded and it allows to set the name for the Swagger UI page. Please see below under
+
 
 ## Overview
-`@apvee/azure-functions-openapi` is an extension for Azure Functions V4 that simplifies the process of integrating OpenAPI documentation. It automatically generates and serves OpenAPI 2.0, 3.0.3, and 3.1.0 definitions and provides a Swagger UI for your Azure Functions. Built on top of `@asteasolutions/zod-to-openapi`, it uses **Zod Schemas** for type-safe request validation and response handling, ensuring that your API is well-documented and easy to explore.
+`@ulfschneider/azure-functions-openapi` is an extension for Azure Functions V4 that simplifies the process of integrating OpenAPI documentation. It automatically generates and serves OpenAPI 2.0, 3.0.3, and 3.1.0 definitions and provides a Swagger UI for your Azure Functions. Built on top of `@asteasolutions/zod-to-openapi`, it uses **Zod Schemas** for type-safe request validation and response handling, ensuring that your API is well-documented and easy to explore.
 
 ## Benefits of Documenting APIs with OpenAPI
 Documenting your APIs with OpenAPI offers several significant advantages:
@@ -24,7 +27,7 @@ By leveraging the benefits of OpenAPI documentation, you can create a more robus
 ## Installation
 To install the package and its dependencies, run:
 ```bash
-npm install @apvee/azure-functions-openapi
+npm install @ulfschneider/azure-functions-openapi
 ```
 You'll also need the following peer dependencies:
 ```bash
@@ -38,7 +41,7 @@ The registerOpenAPIHandler function registers an HTTP GET handler that serves th
 
 Example (index.ts):
 ```typescript
-import { OpenAPIObjectConfig, registerOpenAPIHandler, registerSwaggerUIHandler } from '@apvee/azure-functions-openapi';
+import { OpenAPIObjectConfig, registerOpenAPIHandler, registerSwaggerUIHandler } from '@ulfschneider/azure-functions-openapi';
 import { app } from '@azure/functions';
 
 app.setup({
@@ -110,7 +113,7 @@ This function registers a Swagger UI handler for an Azure Function.
 
 **Example**:
 ```typescript
-registerSwaggerUIHandler('anonymous', 'api', documents);
+registerSwaggerUIHandler('anonymous', 'api', documents, {location: 'https://unpkg.com/swagger-ui-dist/' route: 'swagger-ui.html'});
 ```
 
 #### ```registerApiKeySecuritySchema```
@@ -172,7 +175,7 @@ registerFunction("myFunction", "Processes user data", {
 ```
 
 ##### Using ```registerFunction``` Instead of ```app.http```
-In the context of integrating OpenAPI documentation with Azure Functions, it is recommended to use the ```registerFunction``` utility provided by ```@apvee/azure-functions-openapi``` instead of the standard ```app.http``` method. The ```registerFunction``` utility not only registers the function with the Azure Functions runtime but also handles the registration of the function for OpenAPI documentation.
+In the context of integrating OpenAPI documentation with Azure Functions, it is recommended to use the ```registerFunction``` utility provided by ```@ulfschneider/azure-functions-openapi``` instead of the standard ```app.http``` method. The ```registerFunction``` utility not only registers the function with the Azure Functions runtime but also handles the registration of the function for OpenAPI documentation.
 
 **Why Use registerFunction?**
 - **Automatic OpenAPI Registration**: ```registerFunction``` ensures that your function is automatically included in the OpenAPI documentation, making it easier to maintain and update your API specifications.
@@ -244,13 +247,13 @@ const result = schema.parse(paramsObject);
 These utility functions facilitate the conversion of parameter objects into a format that can be easily validated using Zod schemas, ensuring type safety and consistency in your application.
 
 ## Conclusion
-The ```@apvee/azure-functions-openapi``` library provides a robust and seamless way to integrate OpenAPI documentation with Azure Functions V4 and ensure that your API is well-documented, type-safe, and easy to maintain.
+The ```@ulfschneider/azure-functions-openapi``` library provides a robust and seamless way to integrate OpenAPI documentation with Azure Functions V4 and ensure that your API is well-documented, type-safe, and easy to maintain.
 
 For a real-world example of how to use this library, you can refer to the test-functions project available in this monorepo. This project demonstrates the practical application of the library and can be found at the following link:
 
 https://github.com/apvee/azure-functions-nodejs-monorepo/tree/main/packages/test-functions
 
-By exploring the ```test-functions``` project, you can gain a better understanding of how to leverage the features provided by ```@apvee/azure-functions-openapi``` to enhance your Azure Functions with comprehensive OpenAPI documentation.
+By exploring the ```test-functions``` project, you can gain a better understanding of how to leverage the features provided by ```@ulfschneider/azure-functions-openapi``` to enhance your Azure Functions with comprehensive OpenAPI documentation.
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.

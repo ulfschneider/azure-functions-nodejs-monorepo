@@ -1,4 +1,4 @@
-import { convertURLSearchParamsToObject, registerFunction } from "@apvee/azure-functions-openapi";
+import { convertURLSearchParamsToObject, registerFunction } from "@ulfschneider/azure-functions-openapi";
 import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { apiKeySecurity } from "..";
 import { ErrorResponse, ErrorResponseSchema } from "../models/errors";

@@ -11,7 +11,7 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
-    "@apvee/azure-functions-openapi": "file:../azure-functions-openapi",
+    "@ulfschneider/azure-functions-openapi": "file:../azure-functions-openapi",
     "@azure/functions": "^4.0.0",
     "@ngneat/falso": "^7.2.0",
     "zod": "^3.23.8"

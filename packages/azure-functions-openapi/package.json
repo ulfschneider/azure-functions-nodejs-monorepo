@@ -1,11 +1,11 @@
 {
-  "name": "@apvee/azure-functions-openapi",
-  "version": "1.0.1",
+  "name": "@ulfschneider/azure-functions-openapi",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apvee/azure-functions-nodejs-monorepo.git"
+    "url": "https://github.com/ulfschneider/azure-functions-nodejs-monorepo.git"
   },
-  "homepage": "https://github.com/apvee/azure-functions-nodejs-monorepo",
+  "homepage": "https://github.com/ulfschneider/azure-functions-nodejs-monorepo",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -27,7 +27,7 @@
     "types",
     "zod"
   ],
-  "author": "Fabio Franzini (Apvee Solutions)",
+  "author": "Fabio Franzini (Apvee Solutions), forked by Ulf Schneider",
   "license": "MIT",
   "description": "An extension for Azure Functions V4 that provides support for exporting OpenAPI spec files from annotated Azure Functions.",
   "dependencies": {
