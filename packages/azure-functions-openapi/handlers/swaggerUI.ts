@@ -1,5 +1,5 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { OpenAPIDocumentInfo } from "../core/types";
+import { OpenAPIDocumentInfo , SwaggerUIConfig} from "../core/types";
 
 /**
  * Registers a Swagger UI handler for an Azure Function.
@@ -7,13 +7,23 @@ import { OpenAPIDocumentInfo } from "../core/types";
  * @param {'anonymous' | 'function' | 'admin'} authLevel - The authorization level required to access the Swagger UI.
  * @param {string} azureFunctionRoutePrefix - The route prefix for the Azure Function. Defaults to 'api'.
  * @param {OpenAPIDocumentInfo[]} openAPIDocuments - An array of OpenAPI document information objects to be included in the Swagger UI.
- * 
+ * @param {SwaggerUIConfig} swaggerUIConfig - The settings for the Swagger UI. Defaults to { location: 'https://unpkg.com/swagger-ui-dist/', route: 'swagger-ui.html' }.
+ *
  * This function sets up an HTTP GET handler that serves a Swagger UI page, which lists the provided OpenAPI documents.
  * The Swagger UI is configured to use the provided URLs and titles for the OpenAPI documents.
  */
-export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous', azureFunctionRoutePrefix: string | null = 'api', openAPIDocuments: OpenAPIDocumentInfo[]): void {
+export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | 'admin' = 'anonymous', azureFunctionRoutePrefix: string | null = 'api', openAPIDocuments: OpenAPIDocumentInfo[], swaggerUIConfig?: SwaggerUIConfig): void {
+
+  const defaultSwaggerConfig: SwaggerUIConfig = { location: 'https://unpkg.com/swagger-ui-dist/', route: 'swagger-ui.html' }
+  swaggerUIConfig = Object.assign(defaultSwaggerConfig, swaggerUIConfig)
+
     const fxHandler = async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
         context.log(`Invoking SwaggerUI handler for url "${request.url}"`);
+
+
+        if (swaggerUIConfig.location && !swaggerUIConfig.location.endsWith('/')) {
+          swaggerUIConfig.location += '/'
+        }
 
         const urls = openAPIDocuments.map(doc => {
             return {
@@ -30,9 +40,9 @@ export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | '
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <meta name="description" content="SwaggerUI" />
             <title>SwaggerUI</title>
-            <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
-            <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js" crossorigin></script>
-            <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js" crossorigin></script>
+            <link rel="stylesheet" type="text/css" href="${swaggerUIConfig.location}swagger-ui.css" />
+            <script src="${swaggerUIConfig.location}swagger-ui-bundle.js" crossorigin></script>
+            <script src="${swaggerUIConfig.location}swagger-ui-standalone-preset.js" crossorigin></script>
         </head>
         <body>
         <div id="swagger-ui"></div>
@@ -66,6 +76,6 @@ export function registerSwaggerUIHandler(authLevel: 'anonymous' | 'function' | '
         methods: ['GET'],
         authLevel: authLevel,
         handler: fxHandler,
-        route: `swagger-ui.html`
+        route: swaggerUIConfig.route
     });
 }

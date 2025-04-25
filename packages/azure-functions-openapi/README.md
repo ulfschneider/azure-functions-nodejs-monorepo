@@ -106,6 +106,7 @@ This function registers a Swagger UI handler for an Azure Function.
 - **authLevel**: The authorization level required to access the function ('anonymous', 'function', 'admin').
 - **route**: The route at which the Swagger UI will be served.
 - **documents**: An array of OpenAPI document information objects.
+- **swaggerUIConfig**: Optional configuration object for where to download the Swagger UI script and style libraries as well as the route to the Swagger UI page.
 
 **Example**:
 ```typescript

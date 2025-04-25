@@ -31,10 +31,10 @@ export type CallbacksObject = OpenAPI3CallbacksObject | OpenAPI31CallbacksObject
 
 /**
  * Re-exports the `extendZodWithOpenApi` function from the `@asteasolutions/zod-to-openapi` package.
- * 
+ *
  * This function extends Zod schemas with OpenAPI metadata, allowing for the generation of OpenAPI documentation
  * from Zod validation schemas.
- * 
+ *
  * @module azure-functions-openapi/core/types
  */
 export { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
@@ -43,10 +43,10 @@ export type OpenAPIObjectConfig = Omit<OpenAPIObject, 'paths' | 'components' | '
 
 /**
  * Configuration for an Azure Function route.
- * 
+ *
  * This type extends `RouteConfig` by omitting the `method`, `path`, and `summary` properties,
  * and adds additional properties specific to Azure Functions.
- * 
+ *
  * @property {HttpHandler} handler - The handler function for the route.
  * @property {HttpMethod[]} methods - An array of HTTP methods supported by the route.
  * @property {'anonymous' | 'function' | 'admin'} authLevel - The authorization level required for the route.
@@ -71,4 +71,16 @@ export type FunctionRouteConfig = Omit<RouteConfig, 'method' | 'path' | 'summary
 export type OpenAPIDocumentInfo = {
     title: string;
     url: string;
+}
+
+/**
+* Settings to adjust the location of the Swagger UI library files and the route to the Swagger UI
+*
+* @typedef SwaggerUIConfig
+* @property {string} location - The location where the Swagger UI library files can be found.
+* @property {string} route - The route to the Swagger UI page.
+*/
+export type SwaggerUIConfig = {
+  location?: string;
+  route?: string;
 }
