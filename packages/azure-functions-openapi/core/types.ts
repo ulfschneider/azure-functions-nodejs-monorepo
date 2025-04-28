@@ -1,33 +1,39 @@
 import { HttpHandler, HttpMethod } from "@azure/functions";
 import { RouteConfig } from "@asteasolutions/zod-to-openapi";
 import {
-    ExternalDocumentationObject as OpenAPI3ExternalDocumentationObject,
-    InfoObject as OpenAPI3InfoObject,
-    OpenAPIObject as OpenAPI3OpenAPIObject,
-    SecurityRequirementObject as OpenAPI3SecurityRequirementObject,
-    ServerObject as OpenAPI3ServerObject,
-    TagObject as OpenAPI3TagObject,
-    CallbacksObject as OpenAPI3CallbacksObject,
-} from 'openapi3-ts/oas30';
+  ExternalDocumentationObject as OpenAPI3ExternalDocumentationObject,
+  InfoObject as OpenAPI3InfoObject,
+  OpenAPIObject as OpenAPI3OpenAPIObject,
+  SecurityRequirementObject as OpenAPI3SecurityRequirementObject,
+  ServerObject as OpenAPI3ServerObject,
+  TagObject as OpenAPI3TagObject,
+  CallbacksObject as OpenAPI3CallbacksObject,
+} from "openapi3-ts/oas30";
 import {
-    ExternalDocumentationObject as OpenAPI31ExternalDocumentationObject,
-    InfoObject as OpenAPI31InfoObject,
-    OpenAPIObject as OpenAPI31OpenAPIObject,
-    SecurityRequirementObject as OpenAPI31SecurityRequirementObject,
-    ServerObject as OpenAPI31ServerObject,
-    TagObject as OpenAPI31TagObject,
-    ExampleObject as OpenAPI31ExampleObject,
-    CallbacksObject as OpenAPI31CallbacksObject,
-} from 'openapi3-ts/oas31';
+  ExternalDocumentationObject as OpenAPI31ExternalDocumentationObject,
+  InfoObject as OpenAPI31InfoObject,
+  OpenAPIObject as OpenAPI31OpenAPIObject,
+  SecurityRequirementObject as OpenAPI31SecurityRequirementObject,
+  ServerObject as OpenAPI31ServerObject,
+  TagObject as OpenAPI31TagObject,
+  ExampleObject as OpenAPI31ExampleObject,
+  CallbacksObject as OpenAPI31CallbacksObject,
+} from "openapi3-ts/oas31";
 
 export type OpenAPIObject = OpenAPI3OpenAPIObject | OpenAPI31OpenAPIObject;
 export type InfoObject = OpenAPI3InfoObject | OpenAPI31InfoObject;
 export type ServerObject = OpenAPI3ServerObject | OpenAPI31ServerObject;
 export type TagObject = OpenAPI3TagObject | OpenAPI31TagObject;
-export type SecurityRequirementObject = OpenAPI3SecurityRequirementObject | OpenAPI31SecurityRequirementObject;
-export type ExternalDocumentationObject = OpenAPI3ExternalDocumentationObject | OpenAPI31ExternalDocumentationObject;
+export type SecurityRequirementObject =
+  | OpenAPI3SecurityRequirementObject
+  | OpenAPI31SecurityRequirementObject;
+export type ExternalDocumentationObject =
+  | OpenAPI3ExternalDocumentationObject
+  | OpenAPI31ExternalDocumentationObject;
 export type ExampleObject = OpenAPI31ExampleObject;
-export type CallbacksObject = OpenAPI3CallbacksObject | OpenAPI31CallbacksObject;
+export type CallbacksObject =
+  | OpenAPI3CallbacksObject
+  | OpenAPI31CallbacksObject;
 
 /**
  * Re-exports the `extendZodWithOpenApi` function from the `@asteasolutions/zod-to-openapi` package.
@@ -37,9 +43,12 @@ export type CallbacksObject = OpenAPI3CallbacksObject | OpenAPI31CallbacksObject
  *
  * @module azure-functions-openapi/core/types
  */
-export { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+export { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 
-export type OpenAPIObjectConfig = Omit<OpenAPIObject, 'paths' | 'components' | 'webhooks' | 'openapi'>;
+export type OpenAPIObjectConfig = Omit<
+  OpenAPIObject,
+  "paths" | "components" | "webhooks" | "openapi"
+>;
 
 /**
  * Configuration for an Azure Function route.
@@ -53,12 +62,15 @@ export type OpenAPIObjectConfig = Omit<OpenAPIObject, 'paths' | 'components' | '
  * @property {string} azureFunctionRoutePrefix - The prefix for the Azure Function route.
  * @property {string} route - The route path.
  */
-export type FunctionRouteConfig = Omit<RouteConfig, 'method' | 'path' | 'summary'> & {
-    handler: HttpHandler,
-    methods: HttpMethod[];
-    authLevel: 'anonymous' | 'function' | 'admin',
-    azureFunctionRoutePrefix: string,
-    route: string
+export type FunctionRouteConfig = Omit<
+  RouteConfig,
+  "method" | "path" | "summary"
+> & {
+  handler: HttpHandler;
+  methods: HttpMethod[];
+  authLevel: "anonymous" | "function" | "admin";
+  azureFunctionRoutePrefix: string;
+  route: string;
 };
 
 /**
@@ -69,18 +81,19 @@ export type FunctionRouteConfig = Omit<RouteConfig, 'method' | 'path' | 'summary
  * @property {string} url - The URL where the OpenAPI document can be accessed.
  */
 export type OpenAPIDocumentInfo = {
-    title: string;
-    url: string;
-}
+  title: string;
+  url: string;
+};
 
 /**
-* Settings to adjust the location of the Swagger UI library files and the route to the Swagger UI
-*
-* @typedef SwaggerUIConfig
-* @property {string} location - The location where the Swagger UI library files can be found.
-* @property {string} route - The route to the Swagger UI page.
-*/
+ * Settings to adjust the location of the Swagger UI library files and the route to the Swagger UI
+ *
+ * @typedef SwaggerUIConfig
+ * @property {string} location - The location where the Swagger UI library files can be found.
+ * @property {string} route - The route to the Swagger UI page.
+ */
 export type SwaggerUIConfig = {
   location?: string;
   route?: string;
-}
+  validatorUrl?: null | Boolean | string;
+};

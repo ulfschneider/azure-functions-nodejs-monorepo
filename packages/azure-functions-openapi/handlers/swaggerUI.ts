@@ -5,6 +5,7 @@ import {
   InvocationContext,
 } from "@azure/functions";
 import { OpenAPIDocumentInfo, SwaggerUIConfig } from "../core/types";
+import path from "path";
 
 /**
  * Registers a Swagger UI handler for an Azure Function.
@@ -26,6 +27,7 @@ export function registerSwaggerUIHandler(
   const defaultSwaggerUIConfig: SwaggerUIConfig = {
     location: "https://unpkg.com/swagger-ui-dist/",
     route: "swagger-ui.html",
+    validatorUrl: "https://validator.swagger.io/validator",
   };
   const swaggerConfig = Object.assign(defaultSwaggerUIConfig, swaggerUIConfig);
 
@@ -71,6 +73,11 @@ export function registerSwaggerUIHandler(
             window.swaggerUI = SwaggerUIBundle({
                 urls: ${JSON.stringify(urls)},
                 dom_id: '#swagger-ui',
+                validatorUrl : '${
+                  swaggerConfig.validatorUrl
+                    ? swaggerConfig.validatorUrl
+                    : "none"
+                }',
                 presets: [
                     SwaggerUIBundle.presets.apis,
                     SwaggerUIStandalonePreset

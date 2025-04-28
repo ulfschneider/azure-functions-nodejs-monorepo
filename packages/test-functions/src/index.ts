@@ -47,4 +47,7 @@ const documents = [
   registerOpenAPIHandler("anonymous", openAPIConfig, "2.0", "yaml"),
 ];
 
-registerSwaggerUIHandler("anonymous", "api", documents, { route: "swagger" });
+registerSwaggerUIHandler("anonymous", "api", documents, {
+  route: "swagger",
+  validatorUrl: false,
+});

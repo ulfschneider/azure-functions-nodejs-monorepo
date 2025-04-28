@@ -1,9 +1,21 @@
-import { OpenApiGeneratorV3, OpenApiGeneratorV31 } from "@asteasolutions/zod-to-openapi";
-import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { stringify as yamlStringify } from 'yaml';
+import {
+  OpenApiGeneratorV3,
+  OpenApiGeneratorV31,
+} from "@asteasolutions/zod-to-openapi";
+import {
+  app,
+  HttpRequest,
+  HttpResponseInit,
+  InvocationContext,
+} from "@azure/functions";
+import { stringify as yamlStringify } from "yaml";
 import Converter from "../core/openAPI3ToSwagger2";
 import { registry } from "../core/registry";
-import { OpenAPIDocumentInfo, OpenAPIObject, OpenAPIObjectConfig } from "../core/types";
+import {
+  OpenAPIDocumentInfo,
+  OpenAPIObject,
+  OpenAPIObjectConfig,
+} from "../core/types";
 
 /**
  * Registers an OpenAPI handler for an Azure Function.
@@ -16,46 +28,67 @@ import { OpenAPIDocumentInfo, OpenAPIObject, OpenAPIObjectConfig } from "../core
  * @returns {OpenAPIDocumentInfo} An object containing the title and URL of the registered OpenAPI document.
  */
 export function registerOpenAPIHandler(
-    authLevel: 'anonymous' | 'function' | 'admin',
-    configuration: OpenAPIObjectConfig,
-    version: '2.0' | '3.0.3' | '3.1.0',
-    format: 'json' | 'yaml',
-    route?: string,
+  authLevel: "anonymous" | "function" | "admin",
+  configuration: OpenAPIObjectConfig,
+  version: "2.0" | "3.0.3" | "3.1.0",
+  format: "json" | "yaml",
+  route?: string
 ): OpenAPIDocumentInfo {
-    const finalRoute = route || ((format === "json") ? `openapi-${version}.json` : `openapi-${version}.yaml`);
-    const functionName = `X_OpenAPI_${version.split('.').join('_')}_${format === 'json' ? 'Json' : 'Yaml'}Handler`;
+  const finalRoute =
+    route ||
+    (format === "json" ? `openapi-${version}.json` : `openapi-${version}.yaml`);
+  const functionName = `X_OpenAPI_${version.split(".").join("_")}_${
+    format === "json" ? "Json" : "Yaml"
+  }Handler`;
 
-    app.http(functionName, {
-        methods: ['GET'],
-        authLevel: authLevel,
-        handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
-            context.log(`Invoking OpenAPI ${version} ${format} definition handler for url "${request.url}"`);
+  app.http(functionName, {
+    methods: ["GET"],
+    authLevel: authLevel,
+    handler: async (
+      request: HttpRequest,
+      context: InvocationContext
+    ): Promise<HttpResponseInit> => {
+      context.log(
+        `Invoking OpenAPI ${version} ${format} definition handler for url "${request.url}"`
+      );
 
-            const openApiGenerator = version === '3.1.0' ? OpenApiGeneratorV31 : OpenApiGeneratorV3;
-            let openAPIDefinition: OpenAPIObject = new openApiGenerator(registry.definitions)
-                .generateDocument({
-                    openapi: version,
-                    info: configuration.info,
-                    security: configuration.security,
-                    servers: configuration.servers || [{ url: `${new URL(request.url).origin}` }],
-                    externalDocs: configuration.externalDocs,
-                    tags: configuration.tags
-                });
+      const openApiGenerator =
+        version === "3.1.0" ? OpenApiGeneratorV31 : OpenApiGeneratorV3;
+      let openAPIDefinition: OpenAPIObject = new openApiGenerator(
+        registry.definitions
+      ).generateDocument({
+        openapi: version,
+        info: configuration.info,
+        security: configuration.security,
+        servers: configuration.servers || [
+          { url: `${new URL(request.url).origin}` },
+        ],
+        externalDocs: configuration.externalDocs,
+        tags: configuration.tags,
+      });
 
-            if (version === '2.0') {
-                const converter = new Converter(openAPIDefinition);
-                openAPIDefinition = converter.convert() as OpenAPIObject;
-            }
+      if (version === "2.0") {
+        const converter = new Converter(openAPIDefinition);
+        openAPIDefinition = converter.convert() as OpenAPIObject;
+      }
 
-            return {
-                status: 200,
-                headers: { 'Content-Type': format === 'json' ? 'application/json' : 'application/x-yaml' },
-                body: (format === 'yaml') ? yamlStringify(openAPIDefinition) : undefined,
-                jsonBody: (format === 'json') ? openAPIDefinition : undefined,
-            };
+      return {
+        status: 200,
+        headers: {
+          "Content-Type":
+            format === "json" ? "application/json" : "application/x-yaml",
         },
-        route: finalRoute
-    });
+        body: format === "yaml" ? yamlStringify(openAPIDefinition) : undefined,
+        jsonBody: format === "json" ? openAPIDefinition : undefined,
+      };
+    },
+    route: finalRoute,
+  });
 
-    return { title: `${configuration.info.title} (${format === 'json' ? 'Json' : 'Yaml'} - OpenAPI ${version})`, url: finalRoute };
+  return {
+    title: `${configuration.info.title} (${
+      format === "json" ? "Json" : "Yaml"
+    } - OpenAPI ${version})`,
+    url: finalRoute,
+  };
 }

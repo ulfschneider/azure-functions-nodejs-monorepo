@@ -143,7 +143,7 @@ This function registers a Swagger UI handler for an Azure Function.
 **Example**:
 
 ```typescript
-registerSwaggerUIHandler('anonymous', 'api', documents, {location: 'https://unpkg.com/swagger-ui-dist/' route: 'swagger-ui.html'});
+registerSwaggerUIHandler('anonymous', 'api', documents, {location: 'https://unpkg.com/swagger-ui-dist/' route: 'swagger-ui.html', validatorUrl: 'https://validator.swagger.io/validator'});
 ```
 
 #### `registerApiKeySecuritySchema`
