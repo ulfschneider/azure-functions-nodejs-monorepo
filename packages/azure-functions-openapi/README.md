@@ -1,6 +1,6 @@
 # azure-functions-openapi
 
-This is a fork of @apvee/azure-functions-openapi. The fork adds the functionality to configure the location where the Swagger UI library files will be downloaded and it allows to set the name for the Swagger UI page. Please see below under
+This is a fork of @apvee/azure-functions-openapi. The fork adds the functionality to configure the location where the Swagger UI library files will be downloaded, set the name for the Swagger UI page, and the url for the OpenAPI validator. Please see below under `registerSwaggerUIHandler`.
 
 ## Overview
 
@@ -138,7 +138,7 @@ This function registers a Swagger UI handler for an Azure Function.
 - **authLevel**: The authorization level required to access the function ('anonymous', 'function', 'admin').
 - **route**: The route at which the Swagger UI will be served.
 - **documents**: An array of OpenAPI document information objects.
-- **swaggerUIConfig**: Optional configuration object for where to download the Swagger UI script and style libraries as well as the route to the Swagger UI page.
+- **swaggerUIConfig**: Optional configuration object to define where to download the Swagger UI libraries (`location`, defaulting to "https://unpkg.com/swagger-ui-dist/"), the route to the Swagger UI page (`route`, defaulting to "swagger-ui.html"), and the source of the OpenAPI validator (`validatorUrl`, defaulting to "https://validator.swagger.io/validator"). Setting the the `validatorURL` to "none" will deactivate the OpenAPI validation.
 
 **Example**:
 

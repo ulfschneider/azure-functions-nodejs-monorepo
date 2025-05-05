@@ -13,7 +13,7 @@ import path from "path";
  * @param {'anonymous' | 'function' | 'admin'} authLevel - The authorization level required to access the Swagger UI.
  * @param {string} azureFunctionRoutePrefix - The route prefix for the Azure Function. Defaults to 'api'.
  * @param {OpenAPIDocumentInfo[]} openAPIDocuments - An array of OpenAPI document information objects to be included in the Swagger UI.
- * @param {SwaggerUIConfig} swaggerUIConfig - The settings for the Swagger UI. Defaults to { location: 'https://unpkg.com/swagger-ui-dist/', route: 'swagger-ui.html' }.
+ * @param {SwaggerUIConfig} swaggerUIConfig - The settings for the Swagger UI. Defaults to { location: 'https://unpkg.com/swagger-ui-dist/', route: 'swagger-ui.html' , validatorUrl: 'https://validator.swagger.io/validator'} Setting the validatorUrl to 'none' will deactivate the OpenASPI validation.
  *
  * This function sets up an HTTP GET handler that serves a Swagger UI page, which lists the provided OpenAPI documents.
  * The Swagger UI is configured to use the provided URLs and titles for the OpenAPI documents.
